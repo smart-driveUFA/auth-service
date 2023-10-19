@@ -1,3 +1,13 @@
 from django.contrib import admin
 
-# Register your models here.
+from core.models import TPI, ApiKey
+
+
+@admin.register(TPI)
+class TPIAdmin(admin.ModelAdmin):
+    list_display = ("id",)
+
+
+@admin.register(ApiKey)
+class ApiKeyAdmin(admin.ModelAdmin):
+    list_display = ("id",)
