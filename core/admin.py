@@ -5,7 +5,7 @@ from core.models import TPI, ApiKey
 
 @admin.register(TPI)
 class TPIAdmin(admin.ModelAdmin):
-    list_display = ("id",)
+    list_display = ("id", "user")
 
 
 @admin.register(ApiKey)
