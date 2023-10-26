@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 from core import urls as urls_core
 from user_auth import urls as urls_user
