@@ -20,7 +20,7 @@ class CreateTestModels(APIView):
     def post(self, request):
         num_models_to_create = int(request.data.get('num_models', 0))
 
-        if num_models_to_create <= 0:
+        if num_models_to_create > 0:
 
             for i in range(num_models_to_create):
                 user = UserModel.objects.create(username=f'Test User - {str(i)}')
