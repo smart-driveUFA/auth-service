@@ -40,20 +40,24 @@ class TPIViewSet(viewsets.ModelViewSet):
 
 class CreateTestModels(APIView):
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                "num_models",
-                openapi.IN_QUERY,
-                description="Number of test models to create",
-                type=openapi.TYPE_INTEGER,
-            ),
-        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'num_models': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='Number of test models to create'
+                )
+            },
+            required=['num_models'],
+        ),
     )
     def post(self, request):
-        num_models_to_create = int(request.query_params.get("num_models", 0))
+        num_models_to_create = int(request.data.get("num_models", 0))
 
         if num_models_to_create > 0:
             for i in range(num_models_to_create):
+                if UserModel.objects.filter(username=f"Test User - {i!s}"):
+                    break
                 user = UserModel.objects.create(username=f"Test User - {i!s}")
                 api_key = ApiKey.objects.create(
                     user=user, expired_at=datetime.utcnow().date() + timedelta(days=30),
