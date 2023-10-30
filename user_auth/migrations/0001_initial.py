@@ -27,14 +27,18 @@ class Migration(migrations.Migration):
                 (
                     "last_login",
                     models.DateTimeField(
-                        blank=True, null=True, verbose_name="last login",
+                        blank=True,
+                        null=True,
+                        verbose_name="last login",
                     ),
                 ),
                 ("created", models.DateTimeField(auto_now_add=True)),
                 (
                     "username",
                     models.CharField(
-                        max_length=20, unique=True, verbose_name="Имя организации",
+                        max_length=20,
+                        unique=True,
+                        verbose_name="Имя организации",
                     ),
                 ),
                 (

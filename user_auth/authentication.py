@@ -6,7 +6,6 @@ from rest_framework.authentication import BaseAuthentication
 
 
 class SafeJWTAuthentication(BaseAuthentication):
-
     def authenticate(self, request):
         User = get_user_model()
         authorization_header = request.headers.get("Authorization")
@@ -21,7 +20,8 @@ class SafeJWTAuthentication(BaseAuthentication):
             # Извлекаем access_token из заголовка
             access_token = authorization_header.split(" ")[1]
             payload = jwt.decode(
-                access_token, settings.SECRET_KEY, algorithms=["HS256"])
+                access_token, settings.SECRET_KEY, algorithms=["HS256"],
+            )
 
         except jwt.ExpiredSignatureError:
             raise exceptions.AuthenticationFailed("Срок действия токена доступа истек")
