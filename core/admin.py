@@ -10,4 +10,5 @@ class TPIAdmin(admin.ModelAdmin):
 
 @admin.register(ApiKey)
 class ApiKeyAdmin(admin.ModelAdmin):
-    list_display = ("id",)
+    list_display = ("id", "user")
+    readonly_fields = ("jwt_token", "is_active")

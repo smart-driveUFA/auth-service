@@ -9,7 +9,7 @@ class UserManager(BaseUserManager):
     def create_user(self, username, password=None, email=None):
         user = self.model(
             username=username,
-            email=self.normalize_email(email)
+            email=self.normalize_email(email),
         )
         user.set_password(password)
         user.save(using=self._db)
