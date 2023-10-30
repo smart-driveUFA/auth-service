@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "drf_yasg",
     "rest_framework",
     "rest_framework_swagger",
     "user_auth",
@@ -62,6 +63,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {
+                "staticfiles": "django.templatetags.static",
+            },
         },
     },
 ]
@@ -73,14 +77,14 @@ WSGI_APPLICATION = "project.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("POSTGRES_DB"),
-        'USER': os.getenv("POSTGRES_USER"),
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-        'HOST': 'db',  # меняешь на localhost если хочешь локально запустить сервер
-        'PORT': '5432',
-    }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": "db",  # меняешь на localhost если хочешь локально запустить сервер
+        "PORT": "5432",
+    },
 }
 
 
@@ -110,6 +114,21 @@ AUTH_PASSWORD_VALIDATORS = [
 #         "rest_framework.permissions.IsAuthenticated",
 #     ),
 # }
+
+DATE_INPUT_FORMATS = ["%d.%m.%Y", "%Y.%m.%d"]
+DATE_FORMAT = "d.m.Y"
+DATETIME_FORMAT = "d.m.Y H:i"
+SHORT_DATETIME_FORMAT = "d.m.Y H:i"
+
+LOGIN_URL = "/admin/login/"
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    "DEFAULT_FILTER_BACKEND": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DATE_INPUT_FORMATS": DATE_INPUT_FORMATS,
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

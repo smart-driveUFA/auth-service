@@ -1,17 +1,19 @@
-from django.contrib.auth import get_user_model, authenticate, login
+from django.contrib.auth import authenticate, get_user_model, login
 from django.shortcuts import get_object_or_404, redirect
-
-from rest_framework import exceptions
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework import exceptions, status
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
 
 from core.models import ApiKey
+from core.serializers import ApiKeySerializer
 from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
 from user_auth.serializers import UserSerializer
-from core.serializers import ApiKeySerializer
 
 
 @api_view(["POST"])
@@ -27,7 +29,9 @@ def login_view(request):
     password = request.data.get("password")
 
     if (username is None) or (password is None):
-        raise exceptions.AuthenticationFailed("Требуется указать имя пользователя и пароль")
+        raise exceptions.AuthenticationFailed(
+            "Требуется указать имя пользователя и пароль",
+        )
 
     user = User.objects.filter(username=username).first()
     if user is None:
@@ -73,13 +77,15 @@ def verify_token(request):
     return Response({"data": serializer_data})
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def create_super_user(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    username = request.data.get("username")
+    password = request.data.get("password")
     UserModel.objects.create_superuser(username=username, email=None, password=password)
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return redirect('/admin/')  # перенаправляем на страницу админки
-    return Response({"message": "Failed to create superuser"}, status=status.HTTP_400_BAD_REQUEST)
+        return redirect("/admin/")  # перенаправляем на страницу админки
+    return Response(
+        {"message": "Failed to create superuser"}, status=status.HTTP_400_BAD_REQUEST,
+    )

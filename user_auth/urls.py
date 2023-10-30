@@ -1,6 +1,6 @@
 from django.urls import path
 
-from user_auth.views import login_view, profile, verify_token, create_super_user
+from user_auth.views import create_super_user, login_view, profile, verify_token
 
 app_name = "user_auth"
 
