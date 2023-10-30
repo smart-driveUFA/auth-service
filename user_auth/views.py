@@ -1,5 +1,6 @@
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model, authenticate, login
+from django.shortcuts import get_object_or_404, redirect
+
 from rest_framework import exceptions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -70,3 +71,15 @@ def verify_token(request):
     key = get_object_or_404(ApiKey, jwt_token=access_token)
     serializer_data = ApiKeySerializer(key).data
     return Response({"data": serializer_data})
+
+
+@api_view(['POST'])
+def create_super_user(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    UserModel.objects.create_superuser(username=username, email=None, password=password)
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return redirect('/admin/')  # перенаправляем на страницу админки
+    return Response({"message": "Failed to create superuser"}, status=status.HTTP_400_BAD_REQUEST)
