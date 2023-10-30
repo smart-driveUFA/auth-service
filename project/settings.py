@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv("SECRET_KEY_DJANGO")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'db']
+ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = "user_auth.UserModel"
 

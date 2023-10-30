@@ -75,8 +75,10 @@ def verify_token(request):
 
 @api_view(['POST'])
 def create_super_user(request):
-    UserModel.objects.create_superuser(username='admin', email=None, password='admin')
-    user = authenticate(request, username='admin', password='admin')
+    username = request.data.get('username')
+    password = request.data.get('password')
+    UserModel.objects.create_superuser(username=username, email=None, password=password)
+    user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
         return redirect('/admin/')  # перенаправляем на страницу админки
