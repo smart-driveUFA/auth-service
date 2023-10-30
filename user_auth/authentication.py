@@ -14,6 +14,9 @@ class SafeJWTAuthentication(BaseAuthentication):
         if not authorization_header:
             return None
 
+        if authorization_header.split(" ")[0] != "Bearer":
+            raise exceptions.AuthenticationFailed("Предоставлен не Bearer токен")
+
         try:
             # Извлекаем access_token из заголовка
             access_token = authorization_header.split(" ")[1]
