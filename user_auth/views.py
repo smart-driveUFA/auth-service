@@ -63,8 +63,6 @@ def profile(request):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([SafeJWTAuthentication])
 def verify_token(request):
     """
     param headers: Authorization: token jwt
