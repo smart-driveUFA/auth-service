@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  django:
+  auth_service:
     container_name: auth_service
     build: .
     ports:
@@ -9,12 +9,21 @@ services:
       - .env.docker
     entrypoint: sh -c "./manage.py migrate && ./manage.py runserver 0.0.0.0:8000"
     depends_on:
-      - db
-  db:
+      - postgres
+    networks:
+      - auth_network
+
+  postgres:
     image: postgres:14.3-alpine
     env_file:
       - .env.docker
     container_name: db
     ports:
       - "5432:5432"
+    networks:
+      - auth_network
 
+networks:
+  auth_network:
+    name: smart_drive
+    driver: bridge
