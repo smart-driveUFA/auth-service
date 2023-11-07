@@ -83,7 +83,7 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": "db",  # меняешь на localhost если хочешь локально запустить сервер
+        "HOST": "postgres",  # меняешь на localhost если хочешь локально запустить сервер
         "PORT": "5432",
     },
 }

@@ -12,6 +12,8 @@ services:
       - postgres
     networks:
       - auth_network
+    links:
+      - postgres
 
   postgres:
     image: postgres:14.3-alpine
@@ -27,3 +29,4 @@ networks:
   auth_network:
     name: smart_drive
     driver: bridge
+    external: true
