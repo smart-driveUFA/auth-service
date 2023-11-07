@@ -85,5 +85,6 @@ def create_super_user(request):
         login(request, user)
         return redirect("/admin/")  # перенаправляем на страницу админки
     return Response(
-        {"message": "Failed to create superuser"}, status=status.HTTP_400_BAD_REQUEST,
+        {"message": "Failed to create superuser"},
+        status=status.HTTP_400_BAD_REQUEST,
     )

@@ -1,17 +1,19 @@
 version: '3.8'
 services:
-  auth_service:
-    container_name: auth_service
+  auth-service:
+    container_name: auth-service
     build: .
     ports:
       - "8000:8000"
     env_file:
       - .env.docker
     entrypoint: sh -c "./manage.py migrate && ./manage.py runserver 0.0.0.0:8000"
+    expose:
+      - "8000"
     depends_on:
       - postgres
     networks:
-      - auth_network
+      - common-network
     links:
       - postgres
 
@@ -23,10 +25,10 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - auth_network
+      - common-network
+
 
 networks:
-  auth_network:
-    name: smart_drive
+  common-network:
     driver: bridge
     external: true
