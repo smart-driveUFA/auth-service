@@ -43,12 +43,12 @@ class CreateTestModels(APIView):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'num_models': openapi.Schema(
+                "num_models": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
-                    description='Number of test models to create'
-                )
+                    description="Number of test models to create",
+                ),
             },
-            required=['num_models'],
+            required=["num_models"],
         ),
     )
     def post(self, request):
@@ -59,10 +59,11 @@ class CreateTestModels(APIView):
                 if UserModel.objects.filter(username=f"Test User - {i!s}"):
                     break
                 user = UserModel.objects.create(username=f"Test User - {i!s}")
-                api_key = ApiKey.objects.create(
-                    user=user, expired_at=datetime.utcnow().date() + timedelta(days=30),
+                ApiKey.objects.create(
+                    user=user,
+                    expired_at=datetime.utcnow().date() + timedelta(days=30),
                 )
-                tpi = TPI.objects.create(
+                TPI.objects.create(
                     user=user,
                     latitude=0.0,
                     longitude=0.0,
@@ -88,5 +89,6 @@ class DeleteAllTestModels(APIView):
         TPI.objects.filter(user__username__startswith="Test User").delete()
 
         return Response(
-            {"message": "Удалены все тестовые модели."}, status=status.HTTP_200_OK,
+            {"message": "Удалены все тестовые модели."},
+            status=status.HTTP_200_OK,
         )

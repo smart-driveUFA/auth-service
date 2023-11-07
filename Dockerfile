@@ -8,5 +8,4 @@ RUN apk add --no-cache postgresql-dev gcc python3-dev
 
 COPY ./requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt --no-cache-dir
-EXPOSE 8000
 COPY . .

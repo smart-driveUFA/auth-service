@@ -20,7 +20,9 @@ class SafeJWTAuthentication(BaseAuthentication):
             # Извлекаем access_token из заголовка
             access_token = authorization_header.split(" ")[1]
             payload = jwt.decode(
-                access_token, settings.SECRET_KEY, algorithms=["HS256"],
+                access_token,
+                settings.SECRET_KEY,
+                algorithms=["HS256"],
             )
 
         except jwt.ExpiredSignatureError:
