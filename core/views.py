@@ -22,18 +22,14 @@ class TPIViewSet(viewsets.ModelViewSet):
     authentication_classes = (SafeJWTAuthentication, SessionAuthentication)
 
     def get_queryset(self):
-        token = self.request.headers.get("Authorization")
-        access_token = token.split(" ")[1]
-        user = get_object_or_404(UserModel, apikey__jwt_token=access_token)
+        user = self.request.user
         if user is not None:
             return TPI.objects.filter(user=user)
         else:
             return TPI.objects.none()
 
     def perform_create(self, serializer):
-        token = self.request.headers.get("Authorization")
-        access_token = token.split(" ")[1]
-        user = get_object_or_404(UserModel, apikey__jwt_token=access_token)
+        user = self.request.user
         serializer.validated_data["user"] = user
         serializer.save()
 
