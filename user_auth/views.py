@@ -63,16 +63,10 @@ def profile(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
 def verify_token(request):
-    """
-    param headers: Authorization: token jwt
-    return: Данные о ключе и пользователе status 200
-    """
-    token = request.headers.get("Authorization")
-    access_token = token.split(" ")[1]
-    key = get_object_or_404(ApiKey, jwt_token=access_token)
-    serializer_data = ApiKeySerializer(key).data
-    return Response({"data": serializer_data})
+    return Response({"detail": "success"})
 
 
 @api_view(["POST"])
