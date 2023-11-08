@@ -2,12 +2,16 @@ import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
-from rest_framework.authentication import BaseAuthentication
+from rest_framework.authentication import BasicAuthentication
+from django.utils.translation import gettext_lazy as _
 
 
-class SafeJWTAuthentication(BaseAuthentication):
+User = get_user_model()
+
+
+class SafeJWTAuthentication(BasicAuthentication):
+
     def authenticate(self, request):
-        User = get_user_model()
         authorization_header = request.headers.get("Authorization")
 
         if not authorization_header:
@@ -15,6 +19,13 @@ class SafeJWTAuthentication(BaseAuthentication):
 
         if authorization_header.split(" ")[0] != "Bearer":
             raise exceptions.AuthenticationFailed("Предоставлен не Bearer токен")
+
+        if len(authorization_header.split()) == 1:
+            msg = _('Invalid basic header. No credentials provided.')
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(authorization_header.split()) > 2:
+            msg = _('Invalid basic header. Credentials string should not contain spaces.')
+            raise exceptions.AuthenticationFailed(msg)
 
         try:
             # Извлекаем access_token из заголовка
@@ -41,4 +52,4 @@ class SafeJWTAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed("Пользователь неактивен")
 
         # Возвращаем кортеж (пользователь, None), чтобы указать успешную аутентификацию
-        return (user, None)
+        return user, None

@@ -18,8 +18,8 @@ from user_auth.models import UserModel
 class TPIViewSet(viewsets.ModelViewSet):
     queryset = TPI.objects.all()
     serializer_class = TPISerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [SafeJWTAuthentication, SessionAuthentication]
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (SafeJWTAuthentication, SessionAuthentication)
 
     def get_queryset(self):
         token = self.request.headers.get("Authorization")
