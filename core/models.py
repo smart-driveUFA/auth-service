@@ -12,7 +12,9 @@ User = get_user_model()
 class ApiKey(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        User, verbose_name="Пользователь", on_delete=models.CASCADE,
+        User,
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE,
     )
     created_at = models.DateField("Создан", auto_now_add=True)
     updated_at = models.DateField("Обновлен", auto_now=True)
@@ -37,7 +39,9 @@ class ApiKey(models.Model):
                 "iat": datetime.utcnow(),
             }
             access_token = jwt.encode(
-                access_token_payload, settings.SECRET_KEY, algorithm="HS256",
+                access_token_payload,
+                settings.SECRET_KEY,
+                algorithm="HS256",
             )
             self.jwt_token = access_token
 
@@ -50,7 +54,9 @@ class ApiKey(models.Model):
 class TPI(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        User, verbose_name="Пользователь", on_delete=models.CASCADE,
+        User,
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE,
     )
     latitude = models.FloatField("Широта")
     longitude = models.FloatField("Долгота")

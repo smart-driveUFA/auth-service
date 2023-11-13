@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model, login
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from rest_framework import exceptions, status
 from rest_framework.decorators import (
     api_view,
@@ -10,10 +10,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from core.models import ApiKey
-from core.serializers import ApiKeySerializer
 from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
 from user_auth.serializers import UserSerializer
+
+
+User = get_user_model()
 
 
 @api_view(["POST"])
@@ -24,7 +26,7 @@ def login_view(request):
     :param request:
     :return:
     """
-    User = get_user_model()
+
     username = request.data.get("username")
     password = request.data.get("password")
 
@@ -66,15 +68,7 @@ def profile(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 def verify_token(request):
-    """
-    param headers: Authorization: token jwt
-    return: Данные о ключе и пользователе status 200
-    """
-    token = request.headers.get("Authorization")
-    access_token = token.split(" ")[1]
-    key = get_object_or_404(ApiKey, jwt_token=access_token)
-    serializer_data = ApiKeySerializer(key).data
-    return Response({"data": serializer_data})
+    return Response({"detail": "success"})
 
 
 @api_view(["POST"])
@@ -87,5 +81,6 @@ def create_super_user(request):
         login(request, user)
         return redirect("/admin/")  # перенаправляем на страницу админки
     return Response(
-        {"message": "Failed to create superuser"}, status=status.HTTP_400_BAD_REQUEST,
+        {"message": "Failed to create superuser"},
+        status=status.HTTP_400_BAD_REQUEST,
     )

@@ -18,22 +18,18 @@ from user_auth.models import UserModel
 class TPIViewSet(viewsets.ModelViewSet):
     queryset = TPI.objects.all()
     serializer_class = TPISerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [SafeJWTAuthentication, SessionAuthentication]
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (SafeJWTAuthentication, SessionAuthentication)
 
     def get_queryset(self):
-        token = self.request.headers.get("Authorization")
-        access_token = token.split(" ")[1]
-        user = get_object_or_404(UserModel, apikey__jwt_token=access_token)
+        user = self.request.user
         if user is not None:
             return TPI.objects.filter(user=user)
         else:
             return TPI.objects.none()
 
     def perform_create(self, serializer):
-        token = self.request.headers.get("Authorization")
-        access_token = token.split(" ")[1]
-        user = get_object_or_404(UserModel, apikey__jwt_token=access_token)
+        user = self.request.user
         serializer.validated_data["user"] = user
         serializer.save()
 
@@ -43,12 +39,12 @@ class CreateTestModels(APIView):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'num_models': openapi.Schema(
+                "num_models": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
-                    description='Number of test models to create'
-                )
+                    description="Number of test models to create",
+                ),
             },
-            required=['num_models'],
+            required=["num_models"],
         ),
     )
     def post(self, request):
@@ -59,10 +55,11 @@ class CreateTestModels(APIView):
                 if UserModel.objects.filter(username=f"Test User - {i!s}"):
                     break
                 user = UserModel.objects.create(username=f"Test User - {i!s}")
-                api_key = ApiKey.objects.create(
-                    user=user, expired_at=datetime.utcnow().date() + timedelta(days=30),
+                ApiKey.objects.create(
+                    user=user,
+                    expired_at=datetime.utcnow().date() + timedelta(days=30),
                 )
-                tpi = TPI.objects.create(
+                TPI.objects.create(
                     user=user,
                     latitude=0.0,
                     longitude=0.0,
@@ -88,5 +85,6 @@ class DeleteAllTestModels(APIView):
         TPI.objects.filter(user__username__startswith="Test User").delete()
 
         return Response(
-            {"message": "Удалены все тестовые модели."}, status=status.HTTP_200_OK,
+            {"message": "Удалены все тестовые модели."},
+            status=status.HTTP_200_OK,
         )
