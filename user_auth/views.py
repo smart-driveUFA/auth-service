@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model, login
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from rest_framework import exceptions, status
 from rest_framework.decorators import (
     api_view,
@@ -10,10 +10,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from core.models import ApiKey
-from core.serializers import ApiKeySerializer
 from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
 from user_auth.serializers import UserSerializer
+
+
+User = get_user_model()
 
 
 @api_view(["POST"])
@@ -24,7 +26,7 @@ def login_view(request):
     :param request:
     :return:
     """
-    User = get_user_model()
+
     username = request.data.get("username")
     password = request.data.get("password")
 
