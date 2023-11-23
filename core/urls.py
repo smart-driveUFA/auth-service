@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from core.views import CreateTestModels, DeleteAllTestModels, TPIViewSet
+from core.views import CreateTestModels, DeleteAllTestModels, TPIViewSet, count_request_tpi
 
 app_name = "core"
 
@@ -12,6 +12,7 @@ urlpatterns = [
         DeleteAllTestModels.as_view(),
         name="delete_all_test_models",
     ),
+    path("count_request_tpi/", count_request_tpi, name="count_request_tpi"),
 ]
 
 router = DefaultRouter()

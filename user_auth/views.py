@@ -65,13 +65,6 @@ def profile(request):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([SafeJWTAuthentication])
-def verify_token(request):
-    return Response({"detail": "success"})
-
-
-@api_view(["POST"])
 def create_super_user(request):
     username = request.data.get("username")
     password = request.data.get("password")

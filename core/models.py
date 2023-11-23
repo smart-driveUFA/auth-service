@@ -70,3 +70,16 @@ class TPI(models.Model):
 
     def __str__(self):
         return f"{self.latitude}/{self.longitude} - {self.direction}"
+
+
+class CountRequestTpi(models.Model):
+    tpi = models.ForeignKey(TPI, verbose_name="ТПИ", on_delete=models.CASCADE)
+    time = models.DateTimeField("Время запроса", auto_now_add=True)
+
+    class Meta:
+        ordering = ("time",)
+        verbose_name = "Запрос"
+        verbose_name_plural = "Список запросов"
+
+    def __str__(self):
+        return f"{self.tpi} - {self.time}"
