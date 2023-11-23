@@ -25,7 +25,8 @@ class Migration(migrations.Migration):
                 (
                     "time",
                     models.DateTimeField(
-                        auto_now_add=True, verbose_name="Время запроса"
+                        auto_now_add=True,
+                        verbose_name="Время запроса",
                     ),
                 ),
                 (
