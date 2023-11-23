@@ -5,11 +5,16 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.models import TPI, ApiKey
+from core.models import TPI, ApiKey, CountRequestTpi
 from core.serializers import TPISerializer
 from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
@@ -32,6 +37,24 @@ class TPIViewSet(viewsets.ModelViewSet):
         user = self.request.user
         serializer.validated_data["user"] = user
         serializer.save()
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+def count_request_tpi(request):
+    lat = request.data.get("lat", None)
+    lon = request.data.get("lon", None)
+    if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
+        tpi_exists = TPI.objects.filter(latitude=lat, longitude=lon).exists()
+        if tpi_exists:
+            tpi_instance = TPI.objects.filter(latitude=lat, longitude=lon).first()
+            count_request_tpi_instance = CountRequestTpi.objects.create(tpi=tpi_instance)
+            return Response({"detail": "success"})
+        else:
+            Response({"detail": "tpi not found"})
+    else:
+        raise TypeError("expected int or float")
 
 
 class CreateTestModels(APIView):

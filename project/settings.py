@@ -140,13 +140,13 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TASK_SERIALIZER = "json"
-
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+# CELERY_TIMEZONE = TIME_ZONE
+# CELERY_ACCEPT_CONTENT = ["application/json"]
+# CELERY_RESULT_SERIALIZER = "json"
+# CELERY_TASK_SERIALIZER = "json"
+#
+# CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+# CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
