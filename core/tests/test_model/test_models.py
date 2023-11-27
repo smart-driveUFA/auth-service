@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
+
 from django.test import TestCase
 
-from core.models import ApiKey, TPI
+from core.models import TPI, ApiKey
 from user_auth.factories import UserFactory
 
 
@@ -9,7 +10,8 @@ class ApiKeyModelTest(TestCase):
     def setUp(self):
         self.user = UserFactory()
         self.api_key = ApiKey.objects.create(
-            user=self.user, expired_at=datetime.utcnow().date() + timedelta(days=30)
+            user=self.user,
+            expired_at=datetime.utcnow().date() + timedelta(days=30),
         )
 
     def test_api_key_str(self):
@@ -29,7 +31,10 @@ class TPIModeTest(TestCase):
     def setUp(self):
         self.user = UserFactory()
         self.tpi = TPI.objects.create(
-            user=self.user, latitude=1.234, longitude=5.678, direction="north"
+            user=self.user,
+            latitude=1.234,
+            longitude=5.678,
+            direction="north",
         )
 
     def test_tpi_str(self):
@@ -43,10 +48,16 @@ class TPIModeTest(TestCase):
 
     def test_tpi_ordering(self):
         tpi1 = TPI.objects.create(
-            user=self.user, latitude=2.345, longitude=6.789, direction="south"
+            user=self.user,
+            latitude=2.345,
+            longitude=6.789,
+            direction="south",
         )
         tpi2 = TPI.objects.create(
-            user=self.user, latitude=3.456, longitude=7.891, direction="east"
+            user=self.user,
+            latitude=3.456,
+            longitude=7.891,
+            direction="east",
         )
         tpis = TPI.objects.all()
         self.assertEqual(tpis[0], self.tpi)

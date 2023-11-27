@@ -14,7 +14,6 @@ from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
 from user_auth.serializers import UserSerializer
 
-
 User = get_user_model()
 
 

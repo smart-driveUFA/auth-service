@@ -3,16 +3,15 @@ from datetime import datetime, timedelta
 
 import jwt
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
 
-User = get_user_model()
+from user_auth.models import UserModel
 
 
 class ApiKey(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        User,
+        UserModel,
         verbose_name="Пользователь",
         on_delete=models.CASCADE,
     )
@@ -54,7 +53,7 @@ class ApiKey(models.Model):
 class TPI(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        User,
+        UserModel,
         verbose_name="Пользователь",
         on_delete=models.CASCADE,
     )

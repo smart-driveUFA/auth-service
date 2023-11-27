@@ -1,20 +1,20 @@
 from datetime import datetime, timedelta
-from rest_framework.test import APITestCase
-from rest_framework import status
 
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 
-from user_auth.factories import UserFactory
-
-from core.models import ApiKey, TPI
 from core.factories import TpiFactory
+from core.models import TPI, ApiKey
+from user_auth.factories import UserFactory
 
 
 class TPIViewSetTest(APITestCase):
     def setUp(self):
         self.user = UserFactory()
         self.api_key = ApiKey.objects.create(
-            user=self.user, expired_at=datetime.utcnow().date() + timedelta(days=30)
+            user=self.user,
+            expired_at=datetime.utcnow().date() + timedelta(days=30),
         )
         self.valid_token = self.api_key.jwt_token
         self.tpi = TpiFactory(user=self.user)
@@ -86,11 +86,7 @@ class TPIViewSetTest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.valid_token}")
         tpi = self.tpi
         url = reverse("core:tpi-detail", kwargs={"pk": tpi.id})
-        data = {
-            "latitude": 345.8787,
-            "longitude": 2.84598,
-            "direction": "Vologda-Ufa",
-        }
+        data = {"latitude": 345.8787, "longitude": 2.84598, "direction": "Vologda-Ufa"}
         response = self.client.put(url, data)
 
         assert response.status_code == status.HTTP_200_OK

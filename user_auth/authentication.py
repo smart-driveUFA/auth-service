@@ -1,10 +1,9 @@
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import BasicAuthentication
-from django.utils.translation import gettext_lazy as _
-
 
 User = get_user_model()
 
@@ -24,7 +23,7 @@ class SafeJWTAuthentication(BasicAuthentication):
             raise exceptions.AuthenticationFailed(msg)
         elif len(authorization_header.split()) > 2:
             msg = _(
-                "Invalid basic header. Credentials string should not contain spaces."
+                "Invalid basic header. Credentials string should not contain spaces.",
             )
             raise exceptions.AuthenticationFailed(msg)
 

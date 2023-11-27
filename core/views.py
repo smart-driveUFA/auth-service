@@ -79,7 +79,9 @@ class CreateTestModels(APIView):
             for i in range(num_models_to_create):
                 if UserModel.objects.filter(username=f"Test User - {i!s}"):
                     break
-                user = UserModel.objects.create(username=f"Test User - {i!s}")
+                user = UserModel.objects.create(
+                    username=f"Test User - {i!s}", email=f"email{i}@mail.ru"
+                )
                 ApiKey.objects.create(
                     user=user,
                     expired_at=datetime.utcnow().date() + timedelta(days=30),
