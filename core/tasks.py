@@ -22,13 +22,16 @@ def send_email_successfully_create_user(email, api_key):
 
 @app.task
 def check_expired_key(expired_time, message, update=False):
-    expired_keys = ApiKey.objects.filter(expired_at__lt=expired_time)
-    if update:
-        expired_keys.update(is_active=False)
-    for key in expired_keys:
-        send_mail(
-            subject="Сервис Smart Drive",
-            message=message,
-            recipient_list=[key.user.email],
-            from_email=os.getenv("EMAIL_HOST_USER"),
-        )
+    expired_keys = ApiKey.objects.filter(expired_at__lte=expired_time)
+    if expired_keys.exists():
+        if update:
+            expired_keys.update(is_active=False)
+        for key in expired_keys:
+            send_mail(
+                subject="Сервис Smart Drive",
+                message=message,
+                recipient_list=[key.user.email],
+                from_email=os.getenv("EMAIL_HOST_USER"),
+            )
+        return {"message": "succeeded completely"}
+    return {"message": "Not found expired_keys"}
