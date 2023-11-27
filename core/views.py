@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
@@ -49,12 +48,10 @@ def count_request_tpi(request):
         tpi_exists = TPI.objects.filter(latitude=lat, longitude=lon).exists()
         if tpi_exists:
             tpi_instance = TPI.objects.filter(latitude=lat, longitude=lon).first()
-            count_request_tpi_instance = CountRequestTpi.objects.create(tpi=tpi_instance)
+            CountRequestTpi.objects.create(tpi=tpi_instance)
             return Response({"detail": "success"})
         else:
             Response({"detail": "tpi not found"})
-    else:
-        raise TypeError("expected int or float")
 
 
 class CreateTestModels(APIView):
@@ -77,7 +74,9 @@ class CreateTestModels(APIView):
             for i in range(num_models_to_create):
                 if UserModel.objects.filter(username=f"Test User - {i!s}"):
                     break
-                user = UserModel.objects.create(username=f"Test User - {i!s}")
+                user = UserModel.objects.create(
+                    username=f"Test User - {i!s}", email=f"email{i}@mail.ru"
+                )
                 ApiKey.objects.create(
                     user=user,
                     expired_at=datetime.utcnow().date() + timedelta(days=30),

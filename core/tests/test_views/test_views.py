@@ -1,19 +1,21 @@
 from datetime import datetime, timedelta
-from rest_framework.test import APITestCase
-from rest_framework import status
 
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 
-from user_auth.factories import UserFactory
-
-from core.models import ApiKey, TPI
 from core.factories import TpiFactory
+from core.models import TPI, ApiKey
+from user_auth.factories import UserFactory
 
 
 class TPIViewSetTest(APITestCase):
     def setUp(self):
         self.user = UserFactory()
-        self.api_key = ApiKey.objects.create(user=self.user, expired_at=datetime.utcnow().date() + timedelta(days=30))
+        self.api_key = ApiKey.objects.create(
+            user=self.user,
+            expired_at=datetime.utcnow().date() + timedelta(days=30),
+        )
         self.valid_token = self.api_key.jwt_token
         self.tpi = TpiFactory(user=self.user)
 
@@ -21,7 +23,7 @@ class TPIViewSetTest(APITestCase):
         """
         Получаем список tpi
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.valid_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.valid_token}")
         url = reverse("core:tpi-list")
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
@@ -33,12 +35,12 @@ class TPIViewSetTest(APITestCase):
         """
         Создание tpi
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.valid_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.valid_token}")
         url = reverse("core:tpi-list")
         data = {
             "latitude": self.tpi.latitude,
             "longitude": self.tpi.longitude,
-            "direction": self.tpi.direction
+            "direction": self.tpi.direction,
         }
         response = self.client.post(url, data)
 
@@ -52,18 +54,20 @@ class TPIViewSetTest(APITestCase):
         """
         Получение определенного tpi
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.valid_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.valid_token}")
         tpi = self.tpi
         url = reverse("core:tpi-detail", kwargs={"pk": tpi.id})
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
-        assert response.data["latitude"] == TPI.objects.filter(id=tpi.id).first().latitude  # переписать
+        assert (
+            response.data["latitude"] == TPI.objects.filter(id=tpi.id).first().latitude
+        )  # переписать
 
     def test_patch_tpi(self):
         """
         Частичное Обновление tpi
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.valid_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.valid_token}")
         tpi = self.tpi
         url = reverse("core:tpi-detail", kwargs={"pk": tpi.id})
         data = {"latitude": 234.38475}
@@ -79,14 +83,10 @@ class TPIViewSetTest(APITestCase):
         """
         Обновление tpi
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.valid_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.valid_token}")
         tpi = self.tpi
         url = reverse("core:tpi-detail", kwargs={"pk": tpi.id})
-        data = {
-            "latitude": 345.8787,
-            "longitude": 2.84598,
-            "direction": "Vologda-Ufa"
-        }
+        data = {"latitude": 345.8787, "longitude": 2.84598, "direction": "Vologda-Ufa"}
         response = self.client.put(url, data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -99,7 +99,7 @@ class TPIViewSetTest(APITestCase):
         """
         Удаление tpi
         """
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.valid_token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.valid_token}")
         tpi = self.tpi
         url = reverse("core:tpi-detail", kwargs={"pk": tpi.id})
         response = self.client.delete(url)
@@ -108,4 +108,3 @@ class TPIViewSetTest(APITestCase):
         assert (
             TPI.objects.filter(id=tpi.id).exists() is False
         ), "Проверяем на наличие в бд"
-
