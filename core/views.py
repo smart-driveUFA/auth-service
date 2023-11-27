@@ -48,7 +48,9 @@ def count_request_tpi(request):
     if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
         tpi_exists = TPI.objects.filter(user=user, latitude=lat, longitude=lon).exists()
         if tpi_exists:
-            tpi_instance = TPI.objects.filter(user=user, latitude=lat, longitude=lon).first()
+            tpi_instance = TPI.objects.filter(
+                user=user, latitude=lat, longitude=lon
+            ).first()
             count_request_tpi_instance = CountRequestTpi.objects.create(
                 tpi=tpi_instance
             )
