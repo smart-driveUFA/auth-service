@@ -44,10 +44,11 @@ class TPIViewSet(viewsets.ModelViewSet):
 def count_request_tpi(request):
     lat = request.data.get("lat", None)
     lon = request.data.get("lon", None)
+    user = request.user
     if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
-        tpi_exists = TPI.objects.filter(latitude=lat, longitude=lon).exists()
+        tpi_exists = TPI.objects.filter(user=user, latitude=lat, longitude=lon).exists()
         if tpi_exists:
-            tpi_instance = TPI.objects.filter(latitude=lat, longitude=lon).first()
+            tpi_instance = TPI.objects.filter(user=user, latitude=lat, longitude=lon).first()
             count_request_tpi_instance = CountRequestTpi.objects.create(
                 tpi=tpi_instance
             )
