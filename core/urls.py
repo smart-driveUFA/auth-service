@@ -1,7 +1,12 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from core.views import CreateTestModels, DeleteAllTestModels, TPIViewSet, count_request_tpi
+from core.views import (
+    CreateTestModels,
+    DeleteAllTestModels,
+    TPIViewSet,
+    count_request_tpi,
+)
 
 app_name = "core"
 

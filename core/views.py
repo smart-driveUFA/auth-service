@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
@@ -45,14 +44,17 @@ class TPIViewSet(viewsets.ModelViewSet):
 def count_request_tpi(request):
     lat = request.data.get("lat", None)
     lon = request.data.get("lon", None)
+    user = request.user
     if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
-        tpi_exists = TPI.objects.filter(latitude=lat, longitude=lon).exists()
+        tpi_exists = TPI.objects.filter(user=user, latitude=lat, longitude=lon).exists()
         if tpi_exists:
-            tpi_instance = TPI.objects.filter(latitude=lat, longitude=lon).first()
-            count_request_tpi_instance = CountRequestTpi.objects.create(tpi=tpi_instance)
-            return Response({"detail": "success"})
+            tpi_instance = TPI.objects.filter(user=user, latitude=lat, longitude=lon).first()
+            count_request_tpi_instance = CountRequestTpi.objects.create(
+                tpi=tpi_instance
+            )
+            return Response({"detail": "success"}, status.HTTP_201_CREATED)
         else:
-            Response({"detail": "tpi not found"})
+            return Response({"detail": "tpi not found"}, status.HTTP_404_NOT_FOUND)
     else:
         raise TypeError("expected int or float")
 

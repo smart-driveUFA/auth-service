@@ -10,7 +10,6 @@ User = get_user_model()
 
 
 class SafeJWTAuthentication(BasicAuthentication):
-
     def authenticate(self, request):
         authorization_header = request.headers.get("Authorization")
 
@@ -21,10 +20,12 @@ class SafeJWTAuthentication(BasicAuthentication):
             raise exceptions.AuthenticationFailed("Предоставлен не Bearer токен")
 
         if len(authorization_header.split()) == 1:
-            msg = _('Invalid basic header. No credentials provided.')
+            msg = _("Invalid basic header. No credentials provided.")
             raise exceptions.AuthenticationFailed(msg)
         elif len(authorization_header.split()) > 2:
-            msg = _('Invalid basic header. Credentials string should not contain spaces.')
+            msg = _(
+                "Invalid basic header. Credentials string should not contain spaces."
+            )
             raise exceptions.AuthenticationFailed(msg)
 
         try:
