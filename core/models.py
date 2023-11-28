@@ -28,23 +28,24 @@ class ApiKey(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.jwt_token:
-            timedelta_value = (
-                self.expired_at - datetime.utcnow().date()
-            ).days  # разобраться в этом
-            expiration_time = datetime.utcnow() + timedelta(days=timedelta_value)
-            access_token_payload = {
-                "user_id": str(self.user.id),
-                "exp": expiration_time,
-                "iat": datetime.utcnow(),
-            }
-            access_token = jwt.encode(
-                access_token_payload,
-                settings.SECRET_KEY,
-                algorithm="HS256",
-            )
-            self.jwt_token = access_token
+            self._generate_jwt_token()
 
         super(ApiKey, self).save(*args, **kwargs)
+
+    def _generate_jwt_token(self):
+        timedelta_value = (self.expired_at - datetime.utcnow().date()).days
+        expiration_time = datetime.utcnow() + timedelta(days=timedelta_value)
+        access_token_payload = {
+            "user_id": str(self.user.id),
+            "exp": expiration_time,
+            "iat": datetime.utcnow(),
+        }
+        access_token = jwt.encode(
+            access_token_payload,
+            settings.SECRET_KEY,
+            algorithm="HS256",
+        )
+        self.jwt_token = access_token
 
     def __str__(self):
         return str(self.user.username)
