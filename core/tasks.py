@@ -8,10 +8,7 @@ from project.celery import app
 
 @app.task
 def send_email_successfully_create_user(email, api_key):
-    email_body = (
-        "Ваш аккаунт был успешно зарегистрирован в системе Smart Drive"
-        f"Ваш ключ {api_key}"
-    )
+    email_body = f"Ваш token для работы с API Smart Drive\nToken: {api_key}"
     send_mail(
         subject="Сервис Smart Drive",
         message=email_body,
