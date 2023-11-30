@@ -26,14 +26,23 @@ class ApiKey(models.Model):
         verbose_name = "API Ключ"
         verbose_name_plural = "API Ключи"
 
-    def save(self, *args, **kwargs):
-        if not self.jwt_token:
-            self._generate_jwt_token()
+    def save(self, expiration_days=None, *args, **kwargs):
+        if not self.jwt_token or self.expired_at != self._get_previous_expired_at():
+            self._generate_jwt_token(expiration_days=expiration_days)
 
         super(ApiKey, self).save(*args, **kwargs)
 
-    def _generate_jwt_token(self):
-        timedelta_value = (self.expired_at - datetime.utcnow().date()).days
+    def _get_previous_expired_at(self):
+        if self.pk:
+            return ApiKey.objects.get(pk=self.pk).expired_at
+        return None
+
+    def _generate_jwt_token(self, expiration_days=None):
+        if expiration_days is None:
+            timedelta_value = (self.expired_at - datetime.utcnow().date()).days
+        else:
+            timedelta_value = expiration_days
+
         expiration_time = datetime.utcnow() + timedelta(days=timedelta_value)
         access_token_payload = {
             "user_id": str(self.user.id),
