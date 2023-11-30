@@ -83,12 +83,25 @@ class TPI(models.Model):
 
 class CountRequestTpi(models.Model):
     tpi = models.ForeignKey(TPI, verbose_name="ТПИ", on_delete=models.CASCADE)
-    time = models.DateTimeField("Время запроса", auto_now_add=True)
+    created_at = models.DateTimeField("Время запроса", auto_now_add=True)
+    data_yandex = models.JSONField("Данные ЯндексАПИ", null=True, blank=True)
+    data_2gis = models.JSONField("Данные 2GIS", null=True, blank=True)
+    data_ai = models.JSONField("Данные AI", null=True, blank=True)
+    status_yandex = models.BooleanField("Состояние ЯндексАПИ", default=True)
+    status_2gis = models.BooleanField("Состояние 2GIS", default=True)
+    status_ai = models.BooleanField("Состояние AI", default=True)
+
+    def save(self, *args, **kwargs):
+        self.status_yandex = self.data_yandex is not None
+        self.status_2gis = self.data_2gis is not None
+        self.status_ai = self.data_ai is not None
+
+        super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ("time",)
+        ordering = ("created_at",)
         verbose_name = "Запрос"
         verbose_name_plural = "Список запросов"
 
     def __str__(self):
-        return f"{self.tpi} - {self.time}"
+        return f"{self.tpi} - {self.created_at}"

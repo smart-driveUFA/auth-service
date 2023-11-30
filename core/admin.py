@@ -22,4 +22,4 @@ class ApiKeyAdmin(admin.ModelAdmin):
 
 @admin.register(CountRequestTpi)
 class CountRequestTpiAdmin(admin.ModelAdmin):
-    list_display = ("id", "tpi", "time")
+    list_display = ("id", "tpi", "created_at")
