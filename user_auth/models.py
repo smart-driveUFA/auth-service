@@ -2,8 +2,6 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
-# from user_auth.utils import send_email_successfully_create_user
-
 
 class UserManager(BaseUserManager):
     use_in_migration = True

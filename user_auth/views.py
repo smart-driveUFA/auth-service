@@ -17,6 +17,13 @@ from user_auth.serializers import UserSerializer
 User = get_user_model()
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+def verify_token(request):
+    return Response({"detail": "success"})
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def login_view(request):
