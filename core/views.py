@@ -42,8 +42,8 @@ class TPIViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 def count_request_tpi(request):
-    lat = request.data.get("tpi_coordinates").get("lat", None)
-    lon = request.data.get("tpi_coordinates").get("lon", None)
+    lat = float(request.data.get("lat", None))
+    lon = float(request.data.get("lon", None))
     data_yandex = request.data.get("weather", None)
     data_2gis = request.data.get("road_traffic_status", None)
     data_ai = request.data.get("recommended_information", None)
@@ -54,7 +54,7 @@ def count_request_tpi(request):
             tpi_instance = TPI.objects.filter(
                 user=user, latitude=lat, longitude=lon
             ).first()
-            count_request_tpi_instance = CountRequestTpi.objects.create(
+            CountRequestTpi.objects.create(
                 tpi=tpi_instance,
                 data_yandex=data_yandex,
                 data_2gis=data_2gis,
