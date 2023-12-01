@@ -112,7 +112,6 @@ SHORT_DATETIME_FORMAT = "d.m.Y H:i"
 LOGIN_URL = "/admin/login/"
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     "DEFAULT_FILTER_BACKEND": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DATE_INPUT_FORMATS": DATE_INPUT_FORMATS,
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",

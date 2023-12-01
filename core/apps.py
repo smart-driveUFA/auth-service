@@ -6,4 +6,4 @@ class CoreConfig(AppConfig):
     name = "core"
 
     def ready(self):
-        from core.signals import send_api_key_email_on_creation
+        pass
