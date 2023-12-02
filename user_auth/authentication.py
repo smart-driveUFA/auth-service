@@ -39,7 +39,9 @@ class SafeJWTAuthentication(BasicAuthentication):
 
             api_key = ApiKey.objects.filter(user_id=payload["user_id"]).first()
             if api_key is None or not api_key.is_active:
-                raise exceptions.AuthenticationFailed("API-ключ недействителен или неактивен")
+                raise exceptions.AuthenticationFailed(
+                    "API-ключ недействителен или неактивен"
+                )
 
         except jwt.ExpiredSignatureError:
             raise exceptions.AuthenticationFailed("Срок действия токена доступа истек")

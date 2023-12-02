@@ -8,7 +8,15 @@ from .models import TPI, ApiKey
 class TPISerializer(serializers.ModelSerializer):
     class Meta:
         model = TPI
-        fields = ("latitude", "longitude", "direction")
+        fields = (
+            "lat_start",
+            "lon_start",
+            "start",
+            "end",
+            "highway",
+            "lat_end",
+            "lon_end",
+        )
 
 
 class ApiKeySerializer(serializers.ModelSerializer):

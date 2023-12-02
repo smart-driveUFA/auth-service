@@ -7,4 +7,6 @@ from core.tasks import send_email_successfully_create_user
 @receiver(post_save, sender=ApiKey)
 def send_api_key_email_on_creation(sender, instance, created, **kwargs):
     if created:
-        send_email_successfully_create_user.delay(instance.user.email, instance.jwt_token)
+        send_email_successfully_create_user.delay(
+            instance.user.email, instance.jwt_token
+        )

@@ -37,6 +37,30 @@ class TPIViewSet(viewsets.ModelViewSet):
         serializer.validated_data["user"] = user
         serializer.save()
 
+    def post(self, request):
+        lat_start = self.request.data.get("lat_start", None)
+        lon_start = self.request.data.get("lon_start", None)
+        lat_end = self.request.data.get("lat_end", None)
+        lon_end = self.request.data.get("lon_end", None)
+        start = self.request.data.get("start", None)
+        end = self.request.data.get("end", None)
+        highway = self.request.data.get("highway", None)
+
+        if (lat_start, lon_start, start, end, highway, lat_end, lon_end) is not None:
+            TPI.objects.create(
+                user=self.request.user.id,
+                lat_start=lat_start,
+                lon_start=lon_start,
+                lon_end=lon_end,
+                lat_end=lat_end,
+                start=start,
+                end=end,
+                highway=highway,
+            )
+            return Response({"detail": "success"}, status.HTTP_201_CREATED)
+        else:
+            return Response({"detail": "failed"}, status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -45,20 +69,22 @@ def count_request_tpi(request):
     lat = float(request.data.get("lat", None))
     lon = float(request.data.get("lon", None))
     data_yandex = request.data.get("weather", None)
-    data_2gis = request.data.get("road_traffic_status", None)
+    data_2gis = request.data.get("traffic_jams_status", None)
     data_ai = request.data.get("recommended_information", None)
     user = request.user
     if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
         tpi_exists = TPI.objects.filter(user=user, latitude=lat, longitude=lon).exists()
         if tpi_exists:
             tpi_instance = TPI.objects.filter(
-                user=user, latitude=lat, longitude=lon
+                user=user,
+                latitude=lat,
+                longitude=lon,
             ).first()
             CountRequestTpi.objects.create(
                 tpi=tpi_instance,
                 data_yandex=data_yandex,
                 data_2gis=data_2gis,
-                data_ai=data_ai
+                data_ai=data_ai,
             )
             return Response({"detail": "success"}, status.HTTP_201_CREATED)
         else:
@@ -88,7 +114,8 @@ class CreateTestModels(APIView):
                 if UserModel.objects.filter(username=f"Test User - {i!s}"):
                     break
                 user = UserModel.objects.create(
-                    username=f"Test User - {i!s}", email=f"email{i}@mail.ru"
+                    username=f"Test User - {i!s}",
+                    email=f"email{i}@mail.ru",
                 )
                 ApiKey.objects.create(
                     user=user,

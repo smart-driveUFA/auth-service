@@ -36,7 +36,9 @@ class Migration(migrations.Migration):
             model_name="countrequesttpi",
             name="data_yandex",
             field=models.JSONField(
-                blank=True, null=True, verbose_name="Данные ЯндексАПИ"
+                blank=True,
+                null=True,
+                verbose_name="Данные ЯндексАПИ",
             ),
         ),
         migrations.AddField(

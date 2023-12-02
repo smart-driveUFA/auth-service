@@ -67,9 +67,13 @@ class TPI(models.Model):
         verbose_name="Пользователь",
         on_delete=models.CASCADE,
     )
-    latitude = models.FloatField("Широта")
-    longitude = models.FloatField("Долгота")
-    direction = models.TextField("Направление движения")
+    lat_start = models.FloatField("Широта ТПИ", default=0.0)
+    lon_start = models.FloatField("Долгота ТПИ", default=0.0)
+    lat_end = models.FloatField("Широта конечной точки", default=0.0)
+    lon_end = models.FloatField("Долгота конечной точки", default=0.0)
+    start = models.TextField("Начало трассы", default="")
+    end = models.TextField("Конец трассы", default="")
+    highway = models.TextField("Номер трассы", default="")
     created_at = models.DateField("Создан", auto_now_add=True)
 
     class Meta:
@@ -78,7 +82,7 @@ class TPI(models.Model):
         verbose_name_plural = "Список ТПИ"
 
     def __str__(self):
-        return f"{self.latitude}/{self.longitude} - {self.direction}"
+        return f"{self.lat_start}/{self.lon_start} - {self.highway}"
 
 
 class CountRequestTpi(models.Model):
