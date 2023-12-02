@@ -21,6 +21,7 @@ User = get_user_model()
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 def verify_token(request):
+
     return Response({"detail": "success"})
 
 
@@ -37,7 +38,7 @@ def login_view(request):
     password = request.data.get("password")
 
     if (username is None) or (password is None):
-        raise exceptions.AuthenticationFailed(
+        raise exceptions.NotAuthenticated(
             "Требуется указать имя пользователя и пароль",
         )
 

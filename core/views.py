@@ -44,6 +44,7 @@ class TPIViewSet(viewsets.ModelViewSet):
         start = self.request.data.get("start", None)
         end = self.request.data.get("end", None)
         highway = self.request.data.get("highway", None)
+
         if (lat_start, lon_start, start, end, highway, lat_end, lon_end) is not None:
             TPI.objects.create(
                 user=self.request.user.id,
