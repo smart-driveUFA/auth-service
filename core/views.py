@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
@@ -22,7 +23,7 @@ class TPIViewSet(viewsets.ModelViewSet):
     queryset = TPI.objects.all()
     serializer_class = TPISerializer
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (SafeJWTAuthentication,)
+    authentication_classes = (SafeJWTAuthentication, SessionAuthentication)
 
     def get_queryset(self):
         user = self.request.user
