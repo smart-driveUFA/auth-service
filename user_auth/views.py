@@ -21,7 +21,6 @@ User = get_user_model()
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 def verify_token(request):
-
     return Response({"detail": "success"})
 
 

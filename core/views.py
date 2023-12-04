@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from core.models import TPI, ApiKey, CountRequestTpi
 from core.serializers import TPISerializer
+from core.utils import mixin_tpi_model
 from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
 
@@ -38,28 +39,9 @@ class TPIViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def post(self, request):
-        lat_start = self.request.data.get("lat_start", None)
-        lon_start = self.request.data.get("lon_start", None)
-        lat_end = self.request.data.get("lat_end", None)
-        lon_end = self.request.data.get("lon_end", None)
-        start = self.request.data.get("start", None)
-        end = self.request.data.get("end", None)
-        highway = self.request.data.get("highway", None)
-
-        if (lat_start, lon_start, start, end, highway, lat_end, lon_end) is not None:
-            TPI.objects.create(
-                user=self.request.user.id,
-                lat_start=lat_start,
-                lon_start=lon_start,
-                lon_end=lon_end,
-                lat_end=lat_end,
-                start=start,
-                end=end,
-                highway=highway,
-            )
-            return Response({"detail": "success"}, status.HTTP_201_CREATED)
-        else:
-            return Response({"detail": "failed"}, status.HTTP_400_BAD_REQUEST)
+        data = mixin_tpi_model(create=False, get=True, kwargs=self.request.data)
+        return Response({"detail": "success"}, status.HTTP_201_CREATED)\
+            if data else Response({"detail": "failed"}, status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
@@ -72,13 +54,20 @@ def count_request_tpi(request):
     data_2gis = request.data.get("traffic_jams_status", None)
     data_ai = request.data.get("recommended_information", None)
     user = request.user
+    none_value = "None"
+    if data_yandex == none_value:
+        data_yandex = None
+    if data_2gis == none_value:
+        data_2gis = None
+    if data_ai == none_value:
+        data_ai = None
     if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
-        tpi_exists = TPI.objects.filter(user=user, latitude=lat, longitude=lon).exists()
+        tpi_exists = TPI.objects.filter(user=user, lat_start=lat, lon_start=lon).exists()
         if tpi_exists:
             tpi_instance = TPI.objects.filter(
                 user=user,
-                latitude=lat,
-                longitude=lon,
+                lat_start=lat,
+                lon_start=lon,
             ).first()
             CountRequestTpi.objects.create(
                 tpi=tpi_instance,
@@ -91,6 +80,15 @@ def count_request_tpi(request):
             return Response({"detail": "tpi not found"}, status.HTTP_404_NOT_FOUND)
     else:
         raise TypeError("expected int or float")
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SafeJWTAuthentication])
+def get_current_tpi(request):
+    data = mixin_tpi_model(create=False, get=True, kwargs=request.data)
+    return Response(TPISerializer(data).data, status.HTTP_200_OK) \
+        if data else Response({"detail": "not found"}, status.HTTP_404_NOT_FOUND)
 
 
 class CreateTestModels(APIView):
