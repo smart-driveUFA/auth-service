@@ -30,7 +30,7 @@ class ApiKey(models.Model):
         if not self.jwt_token or self.expired_at != self._get_previous_expired_at():
             self._generate_jwt_token(expiration_days=expiration_days)
 
-        super(ApiKey, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def _get_previous_expired_at(self):
         if self.pk:

@@ -5,7 +5,7 @@ from core.views import (
     CreateTestModels,
     DeleteAllTestModels,
     TPIViewSet,
-    count_request_tpi,
+    count_request_tpi, get_current_tpi,
 )
 
 app_name = "core"
@@ -18,6 +18,7 @@ urlpatterns = [
         name="delete_all_test_models",
     ),
     path("count_request_tpi/", count_request_tpi, name="count_request_tpi"),
+    path("get_current_tpi/", get_current_tpi, name="get_current_tpi"),
 ]
 
 router = DefaultRouter()
