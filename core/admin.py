@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.models import TPI, ApiKey, CountRequestTpi
+from core.models import TPI, ApiKey, CountRequestTpi, BlackListJwt
 
 
 class CountRequestTpiInline(admin.TabularInline):
@@ -23,3 +23,9 @@ class ApiKeyAdmin(admin.ModelAdmin):
 @admin.register(CountRequestTpi)
 class CountRequestTpiAdmin(admin.ModelAdmin):
     list_display = ("id", "tpi", "created_at")
+
+
+@admin.register(BlackListJwt)
+class BlackListJwtAdmin(admin.ModelAdmin):
+    list_display = ("jwt_token",)
+    readonly_fields = ("jwt_token",)
