@@ -38,10 +38,14 @@ class TPIViewSet(viewsets.ModelViewSet):
         serializer.validated_data["user"] = user
         serializer.save()
 
-    def post(self, request):
-        data = mixin_tpi_model(create=False, get=True, kwargs=self.request.data)
-        return Response({"detail": "success"}, status.HTTP_201_CREATED)\
-            if data else Response({"detail": "failed"}, status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        data = mixin_tpi_model(create=True, get=False, kwargs=self.request.data)
+        if data:
+            if data.get("message", None):
+                return Response({"detail": data.get("message")}, status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "success"}, status.HTTP_201_CREATED)
+        else:
+            return Response({"detail": "failed"}, status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
