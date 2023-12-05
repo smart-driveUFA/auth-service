@@ -1,3 +1,5 @@
+from django.db.utils import IntegrityError
+
 from core.custom_exceptions import MethodNotAllowsError
 from core.models import TPI
 
@@ -12,16 +14,19 @@ def mixin_tpi_model(create=False, get=False, kwargs=None):
     highway = kwargs.get("highway", None)
     if create:
         if all({lat_start, lon_start, start, end, highway, lat_end, lon_end}):
-            TPI.objects.create(
-                lat_start=lat_start,
-                lon_start=lon_start,
-                lon_end=lon_end,
-                lat_end=lat_end,
-                start=start,
-                end=end,
-                highway=highway,
-            )
-            return True
+            try:
+                TPI.objects.create(
+                    lat_start=lat_start,
+                    lon_start=lon_start,
+                    lon_end=lon_end,
+                    lat_end=lat_end,
+                    start=start,
+                    end=end,
+                    highway=highway,
+                )
+                return True
+            except IntegrityError:
+                return {"message": f"tpi already exist {lat_start, lon_start, start, end, highway}"}
         else:
             raise NameError("excepted required value lat_start, lon_start, start, end, highway, lat_end, lon_end")
     elif get:
