@@ -8,6 +8,21 @@ from django.db import models
 from user_auth.models import UserModel
 
 
+class BlackListJwt(models.Model):
+    user = models.ForeignKey(
+        UserModel,
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE,
+    )
+    jwt_token = models.TextField("JWT Токен")
+    created_at = models.DateField("Создан", auto_now_add=True)
+
+    class Meta:
+        ordering = ("id",)
+        verbose_name = "API Ключ"
+        verbose_name_plural = "Черный список ключей"
+
+
 class ApiKey(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
@@ -31,6 +46,11 @@ class ApiKey(models.Model):
             self._generate_jwt_token(expiration_days=expiration_days)
 
         super().save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        BlackListJwt.objects.create(user=self.user, jwt_token=self.jwt_token)
+
+        super().delete(using, keep_parents)
 
     def _get_previous_expired_at(self):
         if self.pk:
@@ -77,6 +97,7 @@ class TPI(models.Model):
     created_at = models.DateField("Создан", auto_now_add=True)
 
     class Meta:
+        unique_together = ('user', 'lat_start', 'lon_start', 'lat_end', 'lon_end', 'start', 'end', 'highway')
         ordering = ("created_at",)
         verbose_name = "Табло переменной информации"
         verbose_name_plural = "Список ТПИ"
