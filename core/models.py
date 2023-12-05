@@ -9,7 +9,13 @@ from user_auth.models import UserModel
 
 
 class BlackListJwt(models.Model):
+    user = models.ForeignKey(
+        UserModel,
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE,
+    )
     jwt_token = models.TextField("JWT Токен")
+    created_at = models.DateField("Создан", auto_now_add=True)
 
     class Meta:
         ordering = ("id",)
@@ -42,7 +48,7 @@ class ApiKey(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
-        BlackListJwt.objects.create(jwt_token=self.jwt_token)
+        BlackListJwt.objects.create(user=self.user, jwt_token=self.jwt_token)
 
         super().delete(using, keep_parents)
 
