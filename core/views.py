@@ -40,12 +40,10 @@ class TPIViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = mixin_tpi_model(create=True, get=False, kwargs=self.request)
-        if data:
-            if isinstance(data, bool):
-                return Response({"detail": "success"}, status.HTTP_201_CREATED)
-            elif isinstance(data, dict):
-                return Response({"detail": data["message"]}, status.HTTP_400_BAD_REQUEST)
-        return Response({"detail": "failed"}, status.HTTP_400_BAD_REQUEST)
+        if data.get("message", None):
+            return Response({"detail": data["message"]}, status.HTTP_201_CREATED)
+        elif data.get("error", None):
+            return Response({"detail": data["error"]}, status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
@@ -90,9 +88,17 @@ def count_request_tpi(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 def get_current_tpi(request):
-    data = mixin_tpi_model(create=False, get=True, kwargs=request.data)
-    return Response(TPISerializer(data).data, status.HTTP_200_OK) \
-        if data else Response({"detail": "not found"}, status.HTTP_404_NOT_FOUND)
+    data = mixin_tpi_model(create=False, get=True, kwargs=request)
+
+    if isinstance(data, dict):
+        if data.get("error", None):
+            return Response({"detail": data["error"]}, status.HTTP_400_BAD_REQUEST)
+
+    elif isinstance(data, TPI):
+        return Response(TPISerializer(data).data, status.HTTP_200_OK)
+
+    else:
+        return Response({"detail": "not found"}, status.HTTP_404_NOT_FOUND)
 
 
 class CreateTestModels(APIView):

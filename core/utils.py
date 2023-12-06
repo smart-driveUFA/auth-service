@@ -1,6 +1,5 @@
 from django.db.utils import IntegrityError
 
-from core.custom_exceptions import MethodNotAllowsError
 from core.models import TPI
 
 
@@ -13,6 +12,7 @@ def mixin_tpi_model(create=False, get=False, kwargs=None):
     end = kwargs.data.get("end", None)
     highway = kwargs.data.get("highway", None)
     user = kwargs.user
+
     if create:
         if all({lat_start, lon_start, start, end, highway, lat_end, lon_end}):
             try:
@@ -26,11 +26,11 @@ def mixin_tpi_model(create=False, get=False, kwargs=None):
                     end=end,
                     highway=highway,
                 )
-                return True
-            except IntegrityError:
-                return {"message": f"tpi already exist {lat_start, lon_start, start, end, highway}"}
-        else:
-            raise NameError("excepted required value lat_start, lon_start, start, end, highway, lat_end, lon_end")
+            except IntegrityError as e:
+                return {"error": f"{e.args}"}
+
+            return {"message": f"TPI created successfully"}
+
     elif get:
         if all({lat_start, lon_start, start, end, highway}):
             try:
@@ -42,9 +42,8 @@ def mixin_tpi_model(create=False, get=False, kwargs=None):
                     end=end,
                     highway=highway,
                 )
-            except TPI.DoesNotExist:
-                return None
-        else:
-            raise NameError("excepted required value lat_start, lon_start, start, end, highway, lat_end, lon_end")
-    else:
-        raise MethodNotAllowsError("only get or create method")
+            except TPI.DoesNotExist as er_tpi:
+                return {"error": f"{er_tpi.args}"}
+
+            except IntegrityError as er_int:
+                return {"error": f"{er_int.args}"}
