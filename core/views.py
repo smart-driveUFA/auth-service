@@ -135,9 +135,13 @@ class CreateTestModels(APIView):
                 )
                 TPI.objects.create(
                     user=user,
-                    latitude=0.0,
-                    longitude=0.0,
-                    direction=f"Test Direction - {i!s}",
+                    lat_start=0.0,
+                    lon_start=0.0,
+                    lat_end=0.0,
+                    lon_end=0.0,
+                    start="Москва",
+                    end="Вологда",
+                    highway=f"m{i}",
                 )
 
             return Response(
