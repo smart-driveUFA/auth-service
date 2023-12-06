@@ -43,7 +43,11 @@ class TPIViewSet(viewsets.ModelViewSet):
         if data.get("message", None):
             return Response({"detail": data["message"]}, status.HTTP_201_CREATED)
         elif data.get("error", None):
-            return Response({"detail": data["error"]}, status.HTTP_400_BAD_REQUEST)
+            if "already exists" in data["error"]:
+                error_message = "provided tpi already exists"
+            else:
+                error_message = data.get("error")
+            return Response({"detail": error_message}, status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
