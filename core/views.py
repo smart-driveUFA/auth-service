@@ -41,7 +41,7 @@ class TPIViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = mixin_tpi_model(create=True, get=False, kwargs=self.request)
         if data.get("message", None):
-            return Response({"detail": data["message"]}, status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": data["message"]}, status.HTTP_201_CREATED)
         elif data.get("error", None):
             return Response({"detail": data["error"]}, status.HTTP_400_BAD_REQUEST)
 
