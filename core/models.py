@@ -102,8 +102,12 @@ class TPI(models.Model):
         verbose_name = "Табло переменной информации"
         verbose_name_plural = "Список ТПИ"
 
+    @property
+    def count_request_tpi(self):
+        return self.countrequesttpi_set.count()
+
     def __str__(self):
-        return f"{self.lat_start}/{self.lon_start} - {self.highway}"
+        return f"{self.lat_start}/{self.lon_start} | {self.start}-{self.end}-{self.highway}"
 
 
 class CountRequestTpi(models.Model):
