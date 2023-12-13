@@ -97,7 +97,16 @@ class TPI(models.Model):
     created_at = models.DateField("Создан", auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'lat_start', 'lon_start', 'lat_end', 'lon_end', 'start', 'end', 'highway')
+        unique_together = (
+            "user",
+            "lat_start",
+            "lon_start",
+            "lat_end",
+            "lon_end",
+            "start",
+            "end",
+            "highway",
+        )
         ordering = ("created_at",)
         verbose_name = "Табло переменной информации"
         verbose_name_plural = "Список ТПИ"

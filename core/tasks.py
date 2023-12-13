@@ -5,16 +5,43 @@ from django.core.mail import send_mail
 from core.models import ApiKey
 from project.celery import app
 
+from celery import current_task
+
 
 @app.task
-def send_email_successfully_create_user(email, api_key):
-    email_body = f"Ваш token для работы с API Smart Drive\nToken: {api_key}"
+def send_email_successfully_create_user(email, api_key, current_date, expired_at):
+    email_body = (
+        f"Ваш token для работы с API Smart Drive\n"
+        f"Token: {api_key}\n"
+        f"Действует с {current_date} до {expired_at}"
+    )
     send_mail(
         subject="Сервис Smart Drive",
         message=email_body,
         recipient_list=[email],
         from_email=os.getenv("EMAIL_HOST_USER"),
     )
+    result = {"message": "succeeded completely"}
+    current_task.update_state(state="SUCCESS", meta=result)
+    return result
+
+
+@app.task
+def send_email_on_api_key_update(email, api_key, current_date, expired_at):
+    email_body = (
+        f"Обновили ваш token для работы с API Smart Drive\n"
+        f"Token: {api_key}\n"
+        f"Действует с {current_date} до {expired_at}"
+    )
+    send_mail(
+        subject="Сервис Smart Drive",
+        message=email_body,
+        recipient_list=[email],
+        from_email=os.getenv("EMAIL_HOST_USER"),
+    )
+    result = {"message": "succeeded completely"}
+    current_task.update_state(state="SUCCESS", meta=result)
+    return result
 
 
 @app.task

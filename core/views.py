@@ -68,7 +68,9 @@ def count_request_tpi(request):
     if data_ai == none_value:
         data_ai = None
     if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
-        tpi_exists = TPI.objects.filter(user=user, lat_start=lat, lon_start=lon).exists()
+        tpi_exists = TPI.objects.filter(
+            user=user, lat_start=lat, lon_start=lon
+        ).exists()
         if tpi_exists:
             tpi_instance = TPI.objects.filter(
                 user=user,

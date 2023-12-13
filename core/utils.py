@@ -29,7 +29,7 @@ def mixin_tpi_model(create=False, get=False, kwargs=None):
             except IntegrityError as e:
                 return {"error": f"{e.args}"}
 
-            return {"message": f"TPI created successfully"}
+            return {"message": "TPI created successfully"}
 
     elif get:
         if all({lat_start, lon_start, start, end, highway}):

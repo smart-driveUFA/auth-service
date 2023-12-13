@@ -13,7 +13,7 @@ class CountRequestTpiInline(admin.StackedInline):
         "status_ai",
         "data_yandex",
         "data_2gis",
-        "data_ai"
+        "data_ai",
     )
 
 
@@ -30,7 +30,7 @@ class TPIAdmin(admin.ModelAdmin):
     def display_count_request_tpi(self, obj):
         return obj.count_request_tpi
 
-    display_count_request_tpi.short_description = 'Количество запросов'
+    display_count_request_tpi.short_description = "Количество запросов"
 
 
 @admin.register(ApiKey)
@@ -41,12 +41,19 @@ class ApiKeyAdmin(admin.ModelAdmin):
 
 @admin.register(CountRequestTpi)
 class CountRequestTpiAdmin(admin.ModelAdmin):
-    list_display = ("tpi", "user", "created_at", "status_yandex", "status_2gis", "status_ai")
+    list_display = (
+        "tpi",
+        "user",
+        "created_at",
+        "status_yandex",
+        "status_2gis",
+        "status_ai",
+    )
 
     def user(self, obj):
         return obj.tpi.user
 
-    user.short_description = 'User'
+    user.short_description = "User"
 
     list_filter = ("created_at", "tpi", "status_yandex", "status_2gis", "status_ai")
     readonly_fields = (
@@ -57,7 +64,7 @@ class CountRequestTpiAdmin(admin.ModelAdmin):
         "data_ai",
         "status_yandex",
         "status_2gis",
-        "status_ai"
+        "status_ai",
     )
 
 

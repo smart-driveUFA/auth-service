@@ -5,7 +5,8 @@ from core.views import (
     CreateTestModels,
     DeleteAllTestModels,
     TPIViewSet,
-    count_request_tpi, get_current_tpi,
+    count_request_tpi,
+    get_current_tpi,
 )
 
 app_name = "core"
