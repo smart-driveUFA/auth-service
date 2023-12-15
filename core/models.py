@@ -124,7 +124,7 @@ class TPI(models.Model):
 
         super().save(*args, **kwargs)
 
-    def generate_composite_id(self):
+    def _generate_composite_id(self):
         composite_id_string = f"{self.user.username}|{self.lat_start}|{self.lon_start}|{self.lat_end}|{self.lon_end}|{self.start}|{self.end}|{self.highway}"
 
         self.composite_id = uuid.uuid5(uuid.NAMESPACE_DNS, composite_id_string)
