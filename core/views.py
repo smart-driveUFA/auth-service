@@ -72,13 +72,11 @@ class CountRequestTpiCreateAPIView(generics.CreateAPIView):
         if serializer.is_valid(raise_exception=True):
             lat_start = serializer.validated_data.get("lat_start")
             lon_start = serializer.validated_data.get("lon_start")
-            lat_end = serializer.validated_data.get("lat_end")
-            lon_end = serializer.validated_data.get("lon_end")
             start = serializer.validated_data.get("start")
             end = serializer.validated_data.get("end")
             highway = serializer.validated_data.get("highway")
 
-            composite_id_string = f"{self.request.user.username}|{lat_start}|{lon_start}|{lat_end}|{lon_end}|{start}|{end}|{highway}"
+            composite_id_string = f"{self.request.user.username}|{lat_start}|{lon_start}|{start}|{end}|{highway}"
 
             composite_id = uuid.uuid5(uuid.NAMESPACE_DNS, composite_id_string)
 
