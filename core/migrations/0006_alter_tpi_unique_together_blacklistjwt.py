@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                     "start",
                     "end",
                     "highway",
-                )
+                ),
             },
         ),
         migrations.CreateModel(

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from user_auth.serializers import UserSerializer
-from .models import TPI, ApiKey
+from .models import TPI, ApiKey, CountRequestTpi
 
 
 class TPISerializer(serializers.ModelSerializer):
@@ -15,6 +15,19 @@ class TPISerializer(serializers.ModelSerializer):
             "highway",
             "lat_end",
             "lon_end",
+        )
+
+
+class CountRequestTpiSerializer(serializers.ModelSerializer):
+    tpi = TPISerializer()
+
+    class Meta:
+        model = CountRequestTpi
+        fields = (
+            "tpi",
+            "data_yandex",
+            "data_2gis",
+            "data_ai",
         )
 
 

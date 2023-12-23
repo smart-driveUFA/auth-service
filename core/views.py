@@ -1,8 +1,10 @@
+import uuid
 from datetime import datetime, timedelta
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, generics
+from rest_framework.generics import get_object_or_404
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (
     api_view,
@@ -14,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import TPI, ApiKey, CountRequestTpi
-from core.serializers import TPISerializer
+from core.serializers import TPISerializer, CountRequestTpiSerializer
 from core.utils import mixin_tpi_model
 from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
@@ -39,15 +41,48 @@ class TPIViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def create(self, request, *args, **kwargs):
-        data = mixin_tpi_model(create=True, get=False, kwargs=self.request)
-        if data.get("message", None):
-            return Response({"detail": data["message"]}, status.HTTP_201_CREATED)
-        elif data.get("error", None):
-            if "already exists" in data["error"]:
-                error_message = "provided tpi already exists"
-            else:
-                error_message = data.get("error")
-            return Response({"detail": error_message}, status.HTTP_400_BAD_REQUEST)
+        user = self.request.user
+        serializer = TPISerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            data = mixin_tpi_model(
+                create=True, get=False, data=serializer.data, user=user,
+            )
+            if data.get("message", None):
+                return Response({"detail": data["message"]}, status.HTTP_201_CREATED)
+            elif data.get("error", None):
+                if "already exists" in data["error"]:
+                    error_message = "provided tpi already exists"
+                else:
+                    error_message = data.get("error")
+                return Response({"detail": error_message}, status.HTTP_400_BAD_REQUEST)
+
+
+class CountRequestTpiCreateAPIView(generics.CreateAPIView):
+    serializer_class = CountRequestTpiSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (SafeJWTAuthentication, SessionAuthentication)
+
+    def perform_create(self, serializer):
+        serializer.save(tpi=self.get_tpi_instance())
+
+    def get_tpi_instance(self):
+        tpi_data = self.request.data.get("tpi", {})
+        serializer = TPISerializer(data=tpi_data)
+
+        if serializer.is_valid(raise_exception=True):
+            lat_start = serializer.validated_data.get("lat_start")
+            lon_start = serializer.validated_data.get("lon_start")
+            start = serializer.validated_data.get("start")
+            end = serializer.validated_data.get("end")
+            highway = serializer.validated_data.get("highway")
+
+            composite_id_string = f"{self.request.user.username}|{lat_start}|{lon_start}|{start}|{end}|{highway}"
+
+            composite_id = uuid.uuid5(uuid.NAMESPACE_DNS, composite_id_string)
+
+            tpi = get_object_or_404(TPI, composite_id=composite_id)
+
+            return tpi
 
 
 @api_view(["POST"])
@@ -68,7 +103,9 @@ def count_request_tpi(request):
     if data_ai == none_value:
         data_ai = None
     if isinstance(lat, (float, int)) and isinstance(lon, (float, int)):
-        tpi_exists = TPI.objects.filter(user=user, lat_start=lat, lon_start=lon).exists()
+        tpi_exists = TPI.objects.filter(
+            user=user, lat_start=lat, lon_start=lon
+        ).exists()
         if tpi_exists:
             tpi_instance = TPI.objects.filter(
                 user=user,
@@ -92,17 +129,19 @@ def count_request_tpi(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([SafeJWTAuthentication])
 def get_current_tpi(request):
-    data = mixin_tpi_model(create=False, get=True, kwargs=request)
+    user = request.user
+    serializer = TPISerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        data = mixin_tpi_model(create=False, get=True, data=serializer.data, user=user)
+        if isinstance(data, dict):
+            if data.get("error", None):
+                return Response({"detail": data["error"]}, status.HTTP_400_BAD_REQUEST)
 
-    if isinstance(data, dict):
-        if data.get("error", None):
-            return Response({"detail": data["error"]}, status.HTTP_400_BAD_REQUEST)
+        elif isinstance(data, TPI):
+            return Response(TPISerializer(data).data, status.HTTP_200_OK)
 
-    elif isinstance(data, TPI):
-        return Response(TPISerializer(data).data, status.HTTP_200_OK)
-
-    else:
-        return Response({"detail": "not found"}, status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"detail": "not found"}, status.HTTP_404_NOT_FOUND)
 
 
 class CreateTestModels(APIView):

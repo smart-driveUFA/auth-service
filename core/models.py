@@ -87,17 +87,29 @@ class TPI(models.Model):
         verbose_name="Пользователь",
         on_delete=models.CASCADE,
     )
-    lat_start = models.FloatField("Широта ТПИ", default=0.0)
-    lon_start = models.FloatField("Долгота ТПИ", default=0.0)
-    lat_end = models.FloatField("Широта конечной точки", default=0.0)
-    lon_end = models.FloatField("Долгота конечной точки", default=0.0)
-    start = models.TextField("Начало трассы", default="")
-    end = models.TextField("Конец трассы", default="")
-    highway = models.TextField("Номер трассы", default="")
+    lat_start = models.FloatField("Широта ТПИ")
+    lon_start = models.FloatField("Долгота ТПИ")
+    lat_end = models.FloatField("Широта конечной точки")
+    lon_end = models.FloatField("Долгота конечной точки")
+    start = models.TextField("Начало трассы")
+    end = models.TextField("Конец трассы")
+    highway = models.TextField("Номер трассы")
     created_at = models.DateField("Создан", auto_now_add=True)
+    composite_id = models.UUIDField(
+        db_index=True, editable=False, null=True, blank=True,
+    )
 
     class Meta:
-        unique_together = ('user', 'lat_start', 'lon_start', 'lat_end', 'lon_end', 'start', 'end', 'highway')
+        unique_together = (
+            "user",
+            "lat_start",
+            "lon_start",
+            "lat_end",
+            "lon_end",
+            "start",
+            "end",
+            "highway",
+        )
         ordering = ("created_at",)
         verbose_name = "Табло переменной информации"
         verbose_name_plural = "Список ТПИ"
@@ -105,6 +117,17 @@ class TPI(models.Model):
     @property
     def count_request_tpi(self):
         return self.countrequesttpi_set.count()
+
+    def save(self, *args, **kwargs):
+        if not self.composite_id:
+            self.generate_composite_id()
+
+        super().save(*args, **kwargs)
+
+    def _generate_composite_id(self):
+        composite_id_string = f"{self.user.username}|{self.lat_start}|{self.start}|{self.end}|{self.highway}"
+
+        self.composite_id = uuid.uuid5(uuid.NAMESPACE_DNS, composite_id_string)
 
     def __str__(self):
         return f"{self.lat_start}/{self.lon_start} | {self.start}-{self.end}-{self.highway}"
@@ -121,9 +144,9 @@ class CountRequestTpi(models.Model):
     status_ai = models.BooleanField("Состояние AI", default=True)
 
     def save(self, *args, **kwargs):
-        self.status_yandex = self.data_yandex is not None
-        self.status_2gis = self.data_2gis is not None
-        self.status_ai = self.data_ai is not None
+        self.status_yandex = self.data_yandex.get("weather", None) != "None" if self.data_yandex else False
+        self.status_2gis = self.data_2gis.get("traffic_jams_status", None) != "None" if self.data_2gis else False
+        self.status_ai = self.data_ai.get("recommended_information", None) != "None" if self.data_ai else False
 
         super().save(*args, **kwargs)
 
