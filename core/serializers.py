@@ -18,8 +18,16 @@ class TPISerializer(serializers.ModelSerializer):
         )
 
 
+class TpiRequestSerializer(serializers.Serializer):
+    lat_start = serializers.FloatField()
+    lon_start = serializers.FloatField()
+    start = serializers.CharField()
+    end = serializers.CharField()
+    highway = serializers.CharField()
+
+
 class CountRequestTpiSerializer(serializers.ModelSerializer):
-    tpi = TPISerializer()
+    tpi = TpiRequestSerializer()
 
     class Meta:
         model = CountRequestTpi

@@ -142,8 +142,6 @@ class CountRequestTpiCreateAPIViewTest(APITestCase):
             "tpi": {
                 "lat_start": self.tpi.lat_start,
                 "lon_start": self.tpi.lon_start,
-                "lat_end": self.tpi.lat_end,
-                "lon_end": self.tpi.lon_end,
                 "start": self.tpi.start,
                 "end": self.tpi.end,
                 "highway": self.tpi.highway
