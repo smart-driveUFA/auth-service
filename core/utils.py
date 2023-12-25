@@ -3,7 +3,9 @@ import uuid
 from django.db.utils import IntegrityError
 
 from core.models import TPI
-from core.serializers import TPISerializer
+from core.serializers import TPISerializer, TpiRequestSerializer
+
+from rest_framework.generics import get_object_or_404
 
 
 def mixin_tpi_model(create=False, get=False, data=None, user=None):
@@ -20,12 +22,13 @@ def mixin_tpi_model(create=False, get=False, data=None, user=None):
 
     elif get:
         try:
-            serializer = TPISerializer(data=data)
+            serializer = TpiRequestSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.validated_data["user"] = user
             composite_id_string = f"{user.username}|{data['lat_start']}|{data['lon_start']}|{data['start']}|{data['end']}|{data['highway']}"
             composite_id = uuid.uuid5(uuid.NAMESPACE_DNS, composite_id_string)
-            return TPI.objects.get(composite_id=composite_id)
+            tpi = get_object_or_404(TPI, composite_id=composite_id)
+            return tpi
         except TPI.DoesNotExist as er_tpi:
             return {"error": f"{er_tpi.args}"}
 
