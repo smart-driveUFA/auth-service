@@ -58,6 +58,7 @@ class TPIViewSet(viewsets.ModelViewSet):
 
 
 class CountRequestTpiCreateAPIView(generics.CreateAPIView):
+    queryset = CountRequestTpi.objects.all()
     serializer_class = CountRequestTpiSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (SafeJWTAuthentication, SessionAuthentication)
@@ -130,7 +131,7 @@ def count_request_tpi(request):
 @authentication_classes([SafeJWTAuthentication])
 def get_current_tpi(request):
     user = request.user
-    serializer = TPISerializer(data=request.data)
+    serializer = TpiRequestSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         data = mixin_tpi_model(create=False, get=True, data=serializer.data, user=user)
         if isinstance(data, dict):
