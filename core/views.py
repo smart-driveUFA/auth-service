@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import TPI, ApiKey, CountRequestTpi
-from core.serializers import TPISerializer, CountRequestTpiSerializer
+from core.serializers import TPISerializer, CountRequestTpiSerializer, TpiRequestSerializer
 from core.utils import mixin_tpi_model
 from user_auth.authentication import SafeJWTAuthentication
 from user_auth.models import UserModel
@@ -67,7 +67,7 @@ class CountRequestTpiCreateAPIView(generics.CreateAPIView):
 
     def get_tpi_instance(self):
         tpi_data = self.request.data.get("tpi", {})
-        serializer = TPISerializer(data=tpi_data)
+        serializer = TpiRequestSerializer(data=tpi_data)
 
         if serializer.is_valid(raise_exception=True):
             lat_start = serializer.validated_data.get("lat_start")
