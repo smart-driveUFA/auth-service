@@ -143,12 +143,12 @@ class CountRequestTpi(models.Model):
     status_2gis = models.BooleanField("Состояние 2GIS", default=True)
     status_ai = models.BooleanField("Состояние AI", default=True)
 
-    # def save(self, *args, **kwargs):
-    #     self.status_yandex = self.data_yandex.get("data_yandex", None) != "None" if self.data_yandex else False
-    #     self.status_2gis = self.data_2gis.get("data_2gis", None) != "None" if self.data_2gis else False
-    #     self.status_ai = self.data_ai.get("data_ai", None) != "None" if self.data_ai else False
-    #
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.status_yandex = self.data_yandex is not None
+        self.status_2gis = self.data_2gis is not None
+        self.status_ai = self.data_ai is not None
+
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ("created_at",)

@@ -146,9 +146,9 @@ class CountRequestTpiCreateAPIViewTest(APITestCase):
                 "end": self.tpi.end,
                 "highway": self.tpi.highway
             },
-            "data_yandex": {},
-            "data_2gis": {},
-            "data_ai": {}
+            "weather": {},
+            "traffic_jams_status": {},
+            "recommended_information": {}
         }
 
         # Делаем запрос
