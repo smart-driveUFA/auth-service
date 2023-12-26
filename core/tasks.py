@@ -11,31 +11,27 @@ from celery import current_task
 
 @app.task
 def send_email_on_api_key(email, api_key, current_date, expired_at, created=False):
-    try:
-        if created:
-            email_body = (
-                f"Ваш token для работы с API Smart Drive\n"
-                f"Token: {api_key}\n"
-                f"Действует с {current_date} до {expired_at}"
-            )
-        else:
-            email_body = (
-                f"Обновили ваш token для работы с API Smart Drive\n"
-                f"Token: {api_key}\n"
-                f"Действует с {current_date} до {expired_at}"
-            )
-        send_mail(
-            subject="Сервис Smart Drive",
-            message=email_body,
-            recipient_list=[email],
-            from_email=os.getenv("EMAIL_HOST_USER"),
+    if created:
+        email_body = (
+            f"Ваш token для работы с API Smart Drive\n"
+            f"Token: {api_key}\n"
+            f"Действует с {current_date} до {expired_at}"
         )
-        result = {"message": "succeeded completely", "email_body": email_body}
-        current_task.update_state(state="SUCCESS", meta=result)
-        return result
-
-    except SMTPRecipientsRefused as e:
-        print(f"except SMTPRecipientsRefused: {e}")  # переделать в логирование
+    else:
+        email_body = (
+            f"Обновили ваш token для работы с API Smart Drive\n"
+            f"Token: {api_key}\n"
+            f"Действует с {current_date} до {expired_at}"
+        )
+    send_mail(
+        subject="Сервис Smart Drive",
+        message=email_body,
+        recipient_list=[email],
+        from_email=os.getenv("EMAIL_HOST_USER"),
+    )
+    result = {"message": "succeeded completely", "email_body": email_body}
+    current_task.update_state(state="SUCCESS", meta=result)
+    return result
 
 
 @app.task
