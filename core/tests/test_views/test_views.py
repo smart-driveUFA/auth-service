@@ -146,9 +146,9 @@ class CountRequestTpiCreateAPIViewTest(APITestCase):
                 "end": self.tpi.end,
                 "highway": self.tpi.highway
             },
-            "data_yandex": {},
-            "data_2gis": {},
-            "data_ai": {}
+            "weather": None,
+            "traffic_jams_status": {"Barabara": "berebere"},
+            "recommended_information": None
         }
 
         # Делаем запрос
@@ -163,5 +163,5 @@ class CountRequestTpiCreateAPIViewTest(APITestCase):
         # Опционально: Проверяем, что статусы установлены правильно в модели CountRequestTpi
         count_request_tpi = CountRequestTpi.objects.get(tpi=self.tpi)
         self.assertFalse(count_request_tpi.status_yandex)
-        self.assertFalse(count_request_tpi.status_2gis)
+        self.assertTrue(count_request_tpi.status_2gis)
         self.assertFalse(count_request_tpi.status_ai)

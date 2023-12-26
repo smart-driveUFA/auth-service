@@ -144,9 +144,9 @@ class CountRequestTpi(models.Model):
     status_ai = models.BooleanField("Состояние AI", default=True)
 
     def save(self, *args, **kwargs):
-        self.status_yandex = self.data_yandex.get("weather", None) != "None" if self.data_yandex else False
-        self.status_2gis = self.data_2gis.get("traffic_jams_status", None) != "None" if self.data_2gis else False
-        self.status_ai = self.data_ai.get("recommended_information", None) != "None" if self.data_ai else False
+        self.status_yandex = self.data_yandex is not None
+        self.status_2gis = self.data_2gis is not None
+        self.status_ai = self.data_ai is not None
 
         super().save(*args, **kwargs)
 

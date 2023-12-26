@@ -64,6 +64,9 @@ class CountRequestTpiCreateAPIView(generics.CreateAPIView):
     authentication_classes = (SafeJWTAuthentication, SessionAuthentication)
 
     def perform_create(self, serializer):
+        serializer.validated_data["data_yandex"] = self.request.data.get("weather", None)
+        serializer.validated_data["data_2gis"] = self.request.data.get("traffic_jams_status", None)
+        serializer.validated_data["data_ai"] = self.request.data.get("recommended_information", None)
         serializer.save(tpi=self.get_tpi_instance())
 
     def get_tpi_instance(self):
