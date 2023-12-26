@@ -1,5 +1,4 @@
 import os
-from smtplib import SMTPRecipientsRefused
 
 from django.core.mail import send_mail
 
