@@ -1,16 +1,15 @@
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import BasicAuthentication
-from django.utils.translation import gettext_lazy as _
-
+from core.models import ApiKey, BlackListJwt
 
 User = get_user_model()
 
 
 class SafeJWTAuthentication(BasicAuthentication):
-
     def authenticate(self, request):
         authorization_header = request.headers.get("Authorization")
 
@@ -21,10 +20,12 @@ class SafeJWTAuthentication(BasicAuthentication):
             raise exceptions.AuthenticationFailed("Предоставлен не Bearer токен")
 
         if len(authorization_header.split()) == 1:
-            msg = _('Invalid basic header. No credentials provided.')
+            msg = _("Invalid basic header. No credentials provided.")
             raise exceptions.AuthenticationFailed(msg)
         elif len(authorization_header.split()) > 2:
-            msg = _('Invalid basic header. Credentials string should not contain spaces.')
+            msg = _(
+                "Invalid basic header. Credentials string should not contain spaces.",
+            )
             raise exceptions.AuthenticationFailed(msg)
 
         try:
@@ -35,6 +36,18 @@ class SafeJWTAuthentication(BasicAuthentication):
                 settings.SECRET_KEY,
                 algorithms=["HS256"],
             )
+
+            api_key = ApiKey.objects.filter(user_id=payload["user_id"]).first()
+            if api_key is None or not api_key.is_active:
+                raise exceptions.AuthenticationFailed(
+                    "API-ключ недействителен или неактивен",
+                )
+
+            token = BlackListJwt.objects.filter(jwt_token=access_token).exists()
+            if token:
+                raise exceptions.AuthenticationFailed(
+                    "API-ключ недействителен или неактивен",
+                )
 
         except jwt.ExpiredSignatureError:
             raise exceptions.AuthenticationFailed("Срок действия токена доступа истек")

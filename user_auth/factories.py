@@ -4,9 +4,9 @@ from user_auth.models import UserModel
 
 
 class UserFactory(factory.django.DjangoModelFactory):
-    username = 'testuser'
-    email = factory.Sequence(lambda n: f'testuser{n}@example.com')
-    password = factory.PostGenerationMethodCall('set_password', 'password')
+    username = "testuser"
+    email = factory.Sequence(lambda n: f"testuser{n}@example.com")
+    password = factory.PostGenerationMethodCall("set_password", "password")
 
     class Meta:
         model = UserModel

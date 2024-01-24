@@ -12,10 +12,12 @@ services:
       - "8000"
     depends_on:
       - postgres
+      - celery-worker
     networks:
       - common-network
     links:
       - postgres
+
 
   postgres:
     image: postgres:14.3-alpine
@@ -26,6 +28,24 @@ services:
       - "5432:5432"
     networks:
       - common-network
+
+
+  celery-worker:
+    build: .
+    container_name: celery-worker
+    entrypoint: celery
+    command: -A project.celery worker -B --loglevel=info
+    networks:
+      - common-network
+
+  flower:
+    build: .
+    entrypoint: celery
+    command: -A project.celery flower
+    networks:
+      - common-network
+    ports:
+      - "5555:5555"
 
 
 networks:
